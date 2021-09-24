@@ -1,0 +1,26 @@
+---
+- name: Update-package
+  hosts: "{{selhosts}}"
+  gather_facts: no
+  vars:
+    selhosts:
+      - all
+      - monitoring
+      - prodservers
+      - testservers
+      - webservers
+      - agilelocalinfra
+
+  tasks:
+
+  - name: Connection Check
+    ping:
+
+  - name: Repo Update
+    apt:
+      update_cache: yes
+  
+  - name: Upgrade all packages to the latest version
+    apt:
+      name: "*"
+      state: latest

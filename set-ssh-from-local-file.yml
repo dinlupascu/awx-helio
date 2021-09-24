@@ -1,0 +1,51 @@
+---
+- name: Check for management keys in authorized file
+  hosts: all
+  gather_facts: yes
+  become: yes
+  tasks:
+  - name: Connection Check
+    ping:
+
+  - name: Checking for management keys and sync root
+    authorized_key:
+      user: root
+      state: present
+      exclusive: yes
+      key: "{{ lookup('file', '/root/keyslist/management.keys') }}"
+
+  - name: Checking for management keys and sync ubuntu
+    authorized_key:
+      user: ubuntu
+      state: present
+      key: "{{ lookup('file', '/root/keyslist/management.keys') }}"
+  
+  - name: Reload service sshd
+    service:
+      name: sshd
+      state: reloaded
+
+- name: Set\Add new keys for users
+  hosts: "{{selhosts}}"
+  gather_facts: no
+  become: yes
+  vars:
+    selhosts:
+      - all
+      - monitoring
+      - prodservers
+      - testservers
+      - webservers
+      - agilelocalinfra
+      - jenkinsservers
+  tasks:    
+  - name: Set ssh key for basic users
+    authorized_key:
+     user: ubuntu
+     state: present
+     key: "{{ lookup('file', '/root/keyslist/basic.keys') }}"
+
+  - name: Reload service sshd
+    service:
+      name: sshd
+      state: reloaded

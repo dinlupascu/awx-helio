@@ -1,0 +1,26 @@
+---
+- name: Unset keys from hosts
+  hosts: "{{selhosts}}"
+  gather_facts: yes
+  vars:
+    sshpubkey: pubkey
+    selhosts:
+      - all
+      - monitoring
+      - prodservers
+      - testservers
+      - webservers
+      - agilelocalinfra
+      - jenkinsservers
+
+  tasks:    
+  - name: Remove ssh key you specified
+    authorized_key:
+     user: ubuntu
+     state: absent
+     key: "{{sshpubkey}}"
+     
+  - name: Reload service sshd
+    service:
+      name: sshd
+      state: reloaded

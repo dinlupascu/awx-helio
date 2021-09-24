@@ -1,0 +1,26 @@
+- name: Set\Add new keys for users
+  hosts: "{{selhosts}}"
+  gather_facts: yes
+  become: yes
+  vars:
+    sshpubkey: pubkey
+    userset: ubuntu
+    selhosts:
+      - all
+      - monitoring
+      - prodservers
+      - testservers
+      - webservers
+      - agilelocalinfra
+      - jenkinsservers
+  tasks:    
+  - name: Set ssh key for basic users
+    authorized_key:
+     user: "{{userset}}"
+     state: present
+     key: "{{sshpubkey}}"
+     
+  - name: Reload service sshd
+    service:
+      name: sshd
+      state: reloaded
